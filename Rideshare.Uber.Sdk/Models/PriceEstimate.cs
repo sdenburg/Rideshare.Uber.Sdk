@@ -17,10 +17,10 @@ namespace Rideshare.Uber.Sdk.Models
         public string Estimate { get; set; }
 
         [JsonProperty(PropertyName = "low_estimate")]
-        public int? LowEstimate { get; set; }
+        public double? LowEstimate { get; set; }
 
         [JsonProperty(PropertyName = "high_estimate")]
-        public int? HighEstimate { get; set; }
+        public double? HighEstimate { get; set; }
 
         [JsonProperty(PropertyName = "surge_multiplier")]
         public float SurgeMultiplier { get; set; }
