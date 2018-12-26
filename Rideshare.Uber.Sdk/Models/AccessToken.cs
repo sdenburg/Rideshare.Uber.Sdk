@@ -10,9 +10,15 @@ namespace Rideshare.Uber.Sdk.Models
         [JsonProperty(PropertyName = "token_type")]
         public string TokenType { get; set; }
 
+        /// <summary>
+        /// Amount of time in seconds until Value expires
+        /// </summary>
         [JsonProperty(PropertyName = "expires_in")]
         public int ExpiresIn { get; set; }
 
+        /// <summary>
+        /// Valid for one year
+        /// </summary>
         [JsonProperty(PropertyName = "refresh_token")]
         public string RefreshToken { get; set; }
 
