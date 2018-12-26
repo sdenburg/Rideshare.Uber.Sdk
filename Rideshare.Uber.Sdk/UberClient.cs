@@ -14,6 +14,8 @@ namespace Rideshare.Uber.Sdk
     {
         protected readonly HttpClient _httpClient;
 
+        public readonly string _version = "v1.2";
+
         /// <summary>
         /// Initialises a new <see cref="UberClient"/> with the required configurations
         /// </summary>
@@ -44,6 +46,8 @@ namespace Rideshare.Uber.Sdk
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        #region Products
+
         /// <summary>
         /// Gets the products available at a given location.
         /// </summary>
@@ -58,18 +62,18 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<ProductCollection>> GetProductsAsync(float latitude, float longitude)
         {
-            var url = string.Format(
-                "/v1/products?latitude={0}&longitude={1}",
-                latitude, longitude);
+            var url = $"/{_version}/products?latitude={latitude}&longitude={longitude}";
 
             return await GetAsync<ProductCollection>(url);
         }
 
+        #endregion
+
+        #region Estimates
+
         public async Task<UberResponse<PriceEstimateCollection>> GetPriceEstimateAsync(float startLatitude, float startLongitude, float endLatitude, float endLongitude)
         {
-            var url = string.Format(
-                "/v1/estimates/price?start_latitude={0}&start_longitude={1}&end_latitude={2}&end_longitude={3}",
-                startLatitude, startLongitude, endLatitude, endLongitude);
+            var url = $"/{_version}/estimates/price?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
 
             return await GetAsync<PriceEstimateCollection>(url);
         }
@@ -94,9 +98,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<TimeEstimateCollection>> GetTimeEstimateAsync(float startLatitude, float startLongitude, string customerId = null, string productId = null)
         {
-            var url = string.Format(
-                "/v1/estimates/time?start_latitude={0}&start_longitude={1}",
-                startLatitude, startLongitude);
+            var url = $"/{_version}/estimates/time?start_latitude={startLatitude}&start_longitude={startLongitude}";
 
             if (!string.IsNullOrWhiteSpace(customerId))
             {
@@ -111,66 +113,9 @@ namespace Rideshare.Uber.Sdk
             return await GetAsync<TimeEstimateCollection>(url);
         }
 
-        /// <summary>
-        /// Gets a promotion available to new users based on location.
-        /// </summary>
-        /// <param name="startLatitude">
-        /// The start location latitude.
-        /// </param>
-        /// <param name="startLongitude">
-        /// The start location longitude.
-        /// </param>
-        /// <param name="endLatitude">
-        /// The end location latitude.
-        /// </param>
-        /// <param name="endLongitude">
-        /// The end location longitude.
-        /// </param>
-        /// <returns>
-        /// Returns a <see cref="Promotion"/>.
-        /// </returns>
-        public async Task<UberResponse<Promotion>> GetPromotionAsync(float startLatitude, float startLongitude, float endLatitude, float endLongitude)
-        {
-            var url = string.Format(
-                "/v1/promotions?start_latitude={0}&start_longitude={1}&end_latitude={2}&end_longitude={3}",
-                startLatitude, startLongitude, endLatitude, endLongitude);
+        #endregion
 
-            return await GetAsync<Promotion>(url);
-        }
-
-        /// <summary>
-        /// Gets a list of the user's Uber activity.
-        /// </summary>
-        /// <param name="offset">
-        /// The results offset.
-        /// </param>
-        /// <param name="limit">
-        /// The results limit.
-        /// </param>
-        /// <returns>
-        /// Returns a <see cref="UserActivity"/>.
-        /// </returns>
-        public async Task<UberResponse<UserActivity>> GetUserActivityAsync(int offset, int limit)
-        {
-            var url = string.Format(
-                "/v1.1/history?offset={0}&limit={1}",
-                offset, limit);
-
-            return await GetAsync<UserActivity>(url);
-        }
-
-        /// <summary>
-        /// Gets the user's Uber profile.
-        /// </summary>
-        /// <returns>
-        /// Returns a <see cref="UserProfile"/>.
-        /// </returns>
-        public async Task<UberResponse<UserProfile>> GetUserProfileAsync()
-        {
-            var url = string.Format("/v1/me");
-
-            return await GetAsync<UserProfile>(url);
-        }
+        #region Requests
 
         /// <summary>
         /// Makes a pickup request.
@@ -198,7 +143,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<Request>> RequestAsync(string productId, float startLatitude, float startLongitude, float endLatitude, float endLongitude, string surgeConfirmationId = null)
         {
-            var url = "/v1/requests";
+            var url = $"/{_version}/requests";
 
             var postData = new Dictionary<string, string>
             {
@@ -230,7 +175,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<RequestDetails>> GetRequestDetailsAsync(string requestId)
         {
-            var url = string.Format("/v1/requests/{0}", requestId);
+            var url = $"/{_version}/requests/{requestId}";
 
             return await GetAsync<RequestDetails>(url);
         }
@@ -246,7 +191,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<RequestMap>> GetRequestMapAsync(string requestId)
         {
-            var url = string.Format("/v1/requests/{0}/map", requestId);
+            var url = $"/{_version}/requests/{requestId}/map";
 
             return await GetAsync<RequestMap>(url);
         }
@@ -262,10 +207,75 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<bool>> CancelRequestAsync(string requestId)
         {
-            var url = string.Format("/v1/requests/{0}", requestId);
+            var url = $"/{_version}/requests/{requestId}";
 
             return await DeleteAsync(url);
         }
+
+        #endregion
+
+        #region Other
+
+        /// <summary>
+        /// Gets a promotion available to new users based on location.
+        /// </summary>
+        /// <param name="startLatitude">
+        /// The start location latitude.
+        /// </param>
+        /// <param name="startLongitude">
+        /// The start location longitude.
+        /// </param>
+        /// <param name="endLatitude">
+        /// The end location latitude.
+        /// </param>
+        /// <param name="endLongitude">
+        /// The end location longitude.
+        /// </param>
+        /// <returns>
+        /// Returns a <see cref="Promotion"/>.
+        /// </returns>
+        public async Task<UberResponse<Promotion>> GetPromotionAsync(float startLatitude, float startLongitude, float endLatitude, float endLongitude)
+        {
+            var url = $"/{_version}/promotions?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
+
+            return await GetAsync<Promotion>(url);
+        }
+
+        /// <summary>
+        /// Gets a list of the user's Uber activity.
+        /// </summary>
+        /// <param name="offset">
+        /// The results offset.
+        /// </param>
+        /// <param name="limit">
+        /// The results limit.
+        /// </param>
+        /// <returns>
+        /// Returns a <see cref="UserActivity"/>.
+        /// </returns>
+        public async Task<UberResponse<UserActivity>> GetUserActivityAsync(int offset, int limit)
+        {
+            var url = $"/_version/history?offset={offset}&limit={limit}";
+
+            return await GetAsync<UserActivity>(url);
+        }
+
+        /// <summary>
+        /// Gets the user's Uber profile.
+        /// </summary>
+        /// <returns>
+        /// Returns a <see cref="UserProfile"/>.
+        /// </returns>
+        public async Task<UberResponse<UserProfile>> GetUserProfileAsync()
+        {
+            var url = $"/{_version}/me";
+
+            return await GetAsync<UserProfile>(url);
+        }
+
+        #endregion
+
+        #region Helper
 
         /// <summary>
         /// Makes a GET request.
@@ -368,5 +378,7 @@ namespace Rideshare.Uber.Sdk
 
             return uberResponse;
         }
+
+        #endregion
     }
 }
