@@ -1,4 +1,5 @@
 using System.Configuration;
+using System.Reflection;
 using Rideshare.Uber.Sdk.Models;
 using Xunit;
 
@@ -11,8 +12,14 @@ namespace Rideshare.Uber.Sdk.Tests
 
         public UberAuthenticationClientTests()
         {
-            this._clientId = ConfigurationManager.AppSettings["ClientId"];
-            this._clientSecret = ConfigurationManager.AppSettings["ClientSecret"];
+            var fileMap = new ExeConfigurationFileMap()
+            {
+                ExeConfigFilename = $"./{Assembly.GetExecutingAssembly().GetName().Name}.dll.config"
+            };
+            var configuration = ConfigurationManager.OpenMappedExeConfiguration(fileMap, ConfigurationUserLevel.None);
+
+            this._clientId = configuration.AppSettings.Settings["ClientId"].Value;
+            this._clientSecret = configuration.AppSettings.Settings["ClientSecret"].Value;
         }
 
         [Fact]
