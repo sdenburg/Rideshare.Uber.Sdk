@@ -247,6 +247,42 @@ namespace Rideshare.Uber.Sdk
         #region Riders
 
         /// <summary>
+        /// The User Profile endpoint returns information about the Uber user that has authorized with the application.
+        /// </summary>
+        /// <returns>
+        /// Returns a <see cref="UserProfile"/>.
+        /// </returns>
+        public async Task<UberResponse<UserProfile>> GetUserProfileAsync()
+        {
+            var url = $"/{this._version}/me";
+
+            return await this._httpClient.UberGetAsync<UserProfile>(url);
+        }
+
+        /// <summary>
+        /// The User Promotion endpoint allows applying a promotion code to the user’s Uber account.
+        /// </summary>
+        /// <param name="promoCode">
+        /// The promotion code to apply.
+        /// </param>
+        /// <returns>
+        /// Returns a <see cref="PromotionApplied"/>.
+        /// </returns>
+        public async Task<UberResponse<PromotionApplied>> ApplyUserPromotionAsync(string promoCode)
+        {
+            var url = $"/{this._version}/me";
+
+            var patchData = new Dictionary<string, string>
+            {
+                { "applied_promotion_codes", promoCode }
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
+
+            return await this._httpClient.UberPatchAsync<PromotionApplied>(url, content);
+        }
+
+        /// <summary>
         /// Gets a list of the user's Uber activity.
         /// </summary>
         /// <param name="offset">
@@ -263,19 +299,6 @@ namespace Rideshare.Uber.Sdk
             var url = $"/{this._version}/history?offset={offset}&limit={limit}";
 
             return await this._httpClient.UberGetAsync<UserActivity>(url);
-        }
-
-        /// <summary>
-        /// The User Profile endpoint returns information about the Uber user that has authorized with the application.
-        /// </summary>
-        /// <returns>
-        /// Returns a <see cref="UserProfile"/>.
-        /// </returns>
-        public async Task<UberResponse<UserProfile>> GetUserProfileAsync()
-        {
-            var url = $"/{this._version}/me";
-
-            return await this._httpClient.UberGetAsync<UserProfile>(url);
         }
 
         #endregion
