@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Rideshare.Uber.Sdk.Extensions;
 using Rideshare.Uber.Sdk.Interfaces;
 using Rideshare.Uber.Sdk.Models;
 
@@ -33,17 +34,17 @@ namespace Rideshare.Uber.Sdk
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentException("Parameter is required", "token");
             if (string.IsNullOrWhiteSpace(baseUri)) throw new ArgumentException("Parameter is required", "baseUri");
 
-            _httpClient = new HttpClient
+            this._httpClient = new HttpClient
             {
                 BaseAddress = new Uri(baseUri)
             };
 
             var authenticationScheme = tokenType == AccessTokenType.Server ? "Token" : "Bearer";
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authenticationScheme, token);
+            this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authenticationScheme, token);
 
             // Set accept headers to JSON only
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            this._httpClient.DefaultRequestHeaders.Accept.Clear();
+            this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         #region Products
@@ -64,7 +65,7 @@ namespace Rideshare.Uber.Sdk
         {
             var url = $"/{_version}/products?latitude={latitude}&longitude={longitude}";
 
-            return await GetAsync<ProductCollection>(url);
+            return await this._httpClient.UberGetAsync<ProductCollection>(url);
         }
 
         #endregion
@@ -75,7 +76,7 @@ namespace Rideshare.Uber.Sdk
         {
             var url = $"/{_version}/estimates/price?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
 
-            return await GetAsync<PriceEstimateCollection>(url);
+            return await this._httpClient.UberGetAsync<PriceEstimateCollection>(url);
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace Rideshare.Uber.Sdk
                 url += string.Format("&product_id={0}", productId);
             }
 
-            return await GetAsync<TimeEstimateCollection>(url);
+            return await this._httpClient.UberGetAsync<TimeEstimateCollection>(url);
         }
 
         #endregion
@@ -161,7 +162,7 @@ namespace Rideshare.Uber.Sdk
 
             var content = new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json");
 
-            return await PostAsync<Request>(url, content);
+            return await this._httpClient.UberPostAsync<Request>(url, content);
         }
 
         /// <summary>
@@ -177,7 +178,7 @@ namespace Rideshare.Uber.Sdk
         {
             var url = $"/{_version}/requests/{requestId}";
 
-            return await GetAsync<RequestDetails>(url);
+            return await this._httpClient.UberGetAsync<RequestDetails>(url);
         }
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace Rideshare.Uber.Sdk
         {
             var url = $"/{_version}/requests/{requestId}/map";
 
-            return await GetAsync<RequestMap>(url);
+            return await this._httpClient.UberGetAsync<RequestMap>(url);
         }
 
         /// <summary>
@@ -209,12 +210,12 @@ namespace Rideshare.Uber.Sdk
         {
             var url = $"/{_version}/requests/{requestId}";
 
-            return await DeleteAsync(url);
+            return await this._httpClient.UberDeleteAsync(url);
         }
 
         #endregion
 
-        #region Other
+        #region Promotions
 
         /// <summary>
         /// Gets a promotion available to new users based on location.
@@ -238,8 +239,12 @@ namespace Rideshare.Uber.Sdk
         {
             var url = $"/{_version}/promotions?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
 
-            return await GetAsync<Promotion>(url);
+            return await this._httpClient.UberGetAsync<Promotion>(url);
         }
+
+        #endregion
+
+        #region Riders
 
         /// <summary>
         /// Gets a list of the user's Uber activity.
@@ -255,13 +260,13 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<UserActivity>> GetUserActivityAsync(int offset, int limit)
         {
-            var url = $"/_version/history?offset={offset}&limit={limit}";
+            var url = $"/{_version}/history?offset={offset}&limit={limit}";
 
-            return await GetAsync<UserActivity>(url);
+            return await this._httpClient.UberGetAsync<UserActivity>(url);
         }
 
         /// <summary>
-        /// Gets the user's Uber profile.
+        /// The User Profile endpoint returns information about the Uber user that has authorized with the application.
         /// </summary>
         /// <returns>
         /// Returns a <see cref="UserProfile"/>.
@@ -270,113 +275,7 @@ namespace Rideshare.Uber.Sdk
         {
             var url = $"/{_version}/me";
 
-            return await GetAsync<UserProfile>(url);
-        }
-
-        #endregion
-
-        #region Helper
-
-        /// <summary>
-        /// Makes a GET request.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The response data type.
-        /// </typeparam>
-        /// <param name="url">
-        /// The URL being requested.
-        /// </param>
-        /// <returns>
-        /// Returns a <see cref="T"/>.
-        /// </returns>
-        private async Task<UberResponse<T>> GetAsync<T>(string url)
-        {
-            var uberResponse = new UberResponse<T>();
-
-            var response = await _httpClient
-                .GetAsync(url)
-                .ConfigureAwait(false);
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                uberResponse.Data = JsonConvert.DeserializeObject<T>(responseContent);
-            }
-            else
-            {
-                uberResponse.Error = JsonConvert.DeserializeObject<UberError>(responseContent);
-            }
-
-            return uberResponse;
-        }
-
-        /// <summary>
-        /// Makes a POST request.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The response data type.
-        /// </typeparam>
-        /// <param name="url">
-        /// The URL being requested.
-        /// </param>
-        /// <param name="content">
-        /// The content being POST-ed.
-        /// </param>
-        /// <returns>
-        /// Returns a <see cref="T"/>.
-        /// </returns>
-        private async Task<UberResponse<T>> PostAsync<T>(string url, HttpContent content)
-        {
-            var uberResponse = new UberResponse<T>();
-
-            var response = await _httpClient
-                .PostAsync(url, content)
-                .ConfigureAwait(false);
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                uberResponse.Data = JsonConvert.DeserializeObject<T>(responseContent);
-            }
-            else
-            {
-                uberResponse.Error = JsonConvert.DeserializeObject<UberError>(responseContent);
-            }
-
-            return uberResponse;
-        }
-
-        /// <summary>
-        /// Makes a DELETE request.
-        /// </summary>
-        /// <param name="url">
-        /// The URL being requested.
-        /// </param>
-        /// <returns>
-        /// Returns a boolean indicating if the Uber API returned a successful HTTP status.
-        /// </returns>
-        private async Task<UberResponse<bool>> DeleteAsync(string url)
-        {
-            var uberResponse = new UberResponse<bool>();
-
-            var response = await _httpClient
-                .DeleteAsync(url)
-                .ConfigureAwait(false);
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                uberResponse.Data = true;
-            }
-            else
-            {
-                uberResponse.Error = JsonConvert.DeserializeObject<UberError>(responseContent);
-            }
-
-            return uberResponse;
+            return await this._httpClient.UberGetAsync<UserProfile>(url);
         }
 
         #endregion
