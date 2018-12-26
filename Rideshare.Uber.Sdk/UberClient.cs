@@ -31,8 +31,8 @@ namespace Rideshare.Uber.Sdk
         /// </param>
         public UberClient(AccessTokenType tokenType, string token, string baseUri = "https://api.uber.com")
         {
-            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentException("Parameter is required", "token");
-            if (string.IsNullOrWhiteSpace(baseUri)) throw new ArgumentException("Parameter is required", "baseUri");
+            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentException("Parameter is required", nameof(token));
+            if (string.IsNullOrWhiteSpace(baseUri)) throw new ArgumentException("Parameter is required", nameof(baseUri));
 
             this._httpClient = new HttpClient
             {
@@ -63,7 +63,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<ProductCollection>> GetProductsAsync(float latitude, float longitude)
         {
-            var url = $"/{_version}/products?latitude={latitude}&longitude={longitude}";
+            var url = $"/{this._version}/products?latitude={latitude}&longitude={longitude}";
 
             return await this._httpClient.UberGetAsync<ProductCollection>(url);
         }
@@ -74,7 +74,7 @@ namespace Rideshare.Uber.Sdk
 
         public async Task<UberResponse<PriceEstimateCollection>> GetPriceEstimateAsync(float startLatitude, float startLongitude, float endLatitude, float endLongitude)
         {
-            var url = $"/{_version}/estimates/price?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
+            var url = $"/{this._version}/estimates/price?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
 
             return await this._httpClient.UberGetAsync<PriceEstimateCollection>(url);
         }
@@ -99,16 +99,16 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<TimeEstimateCollection>> GetTimeEstimateAsync(float startLatitude, float startLongitude, string customerId = null, string productId = null)
         {
-            var url = $"/{_version}/estimates/time?start_latitude={startLatitude}&start_longitude={startLongitude}";
+            var url = $"/{this._version}/estimates/time?start_latitude={startLatitude}&start_longitude={startLongitude}";
 
             if (!string.IsNullOrWhiteSpace(customerId))
             {
-                url += string.Format("&customer_uuid={0}", customerId);
+                url += $"&customer_uuid={customerId}";
             }
 
             if (!string.IsNullOrWhiteSpace(productId))
             {
-                url += string.Format("&product_id={0}", productId);
+                url += $"&product_id={productId}";
             }
 
             return await this._httpClient.UberGetAsync<TimeEstimateCollection>(url);
@@ -144,7 +144,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<Request>> RequestAsync(string productId, float startLatitude, float startLongitude, float endLatitude, float endLongitude, string surgeConfirmationId = null)
         {
-            var url = $"/{_version}/requests";
+            var url = $"/{this._version}/requests";
 
             var postData = new Dictionary<string, string>
             {
@@ -176,7 +176,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<RequestDetails>> GetRequestDetailsAsync(string requestId)
         {
-            var url = $"/{_version}/requests/{requestId}";
+            var url = $"/{this._version}/requests/{requestId}";
 
             return await this._httpClient.UberGetAsync<RequestDetails>(url);
         }
@@ -192,7 +192,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<RequestMap>> GetRequestMapAsync(string requestId)
         {
-            var url = $"/{_version}/requests/{requestId}/map";
+            var url = $"/{this._version}/requests/{requestId}/map";
 
             return await this._httpClient.UberGetAsync<RequestMap>(url);
         }
@@ -208,7 +208,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<bool>> CancelRequestAsync(string requestId)
         {
-            var url = $"/{_version}/requests/{requestId}";
+            var url = $"/{this._version}/requests/{requestId}";
 
             return await this._httpClient.UberDeleteAsync(url);
         }
@@ -237,7 +237,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<Promotion>> GetPromotionAsync(float startLatitude, float startLongitude, float endLatitude, float endLongitude)
         {
-            var url = $"/{_version}/promotions?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
+            var url = $"/{this._version}/promotions?start_latitude={startLatitude}&start_longitude={startLongitude}&end_latitude={endLatitude}&end_longitude={endLongitude}";
 
             return await this._httpClient.UberGetAsync<Promotion>(url);
         }
@@ -260,7 +260,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<UserActivity>> GetUserActivityAsync(int offset, int limit)
         {
-            var url = $"/{_version}/history?offset={offset}&limit={limit}";
+            var url = $"/{this._version}/history?offset={offset}&limit={limit}";
 
             return await this._httpClient.UberGetAsync<UserActivity>(url);
         }
@@ -273,7 +273,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public async Task<UberResponse<UserProfile>> GetUserProfileAsync()
         {
-            var url = $"/{_version}/me";
+            var url = $"/{this._version}/me";
 
             return await this._httpClient.UberGetAsync<UserProfile>(url);
         }

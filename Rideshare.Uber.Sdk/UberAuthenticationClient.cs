@@ -26,11 +26,11 @@ namespace Rideshare.Uber.Sdk
         /// </param>
         public UberAuthenticationClient(string clientId, string clientSecret)
         {
-            if (string.IsNullOrWhiteSpace(clientId)) throw new ArgumentException("Parameter is required", "clientId");
-            if (string.IsNullOrWhiteSpace(clientSecret)) throw new ArgumentException("Parameter is required", "clientSecret");
+            if (string.IsNullOrWhiteSpace(clientId)) throw new ArgumentException("Parameter is required", nameof(clientId));
+            if (string.IsNullOrWhiteSpace(clientSecret)) throw new ArgumentException("Parameter is required", nameof(clientSecret));
 
-            _clientId = clientId;
-            _clientSecret = clientSecret;
+            this._clientId = clientId;
+            this._clientSecret = clientSecret;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Rideshare.Uber.Sdk
         /// </returns>
         public string GetAuthorizeUrl(List<string> scopes = null, string state = null, string redirectUri = null)
         {
-            var authorizeUrl = $"https://login.uber.com/oauth/authorize?response_type=code&client_id={_clientId}";
+            var authorizeUrl = $"https://login.uber.com/oauth/authorize?response_type=code&client_id={this._clientId}";
 
             if (scopes != null && scopes.Any())
             {
@@ -86,8 +86,8 @@ namespace Rideshare.Uber.Sdk
         {
             var data = new Dictionary<string, string>
             {
-                { "client_id", _clientId },
-                { "client_secret", _clientSecret },
+                { "client_id", this._clientId },
+                { "client_secret", this._clientSecret },
                 { "grant_type", "authorization_code" },
                 { "code", authorizationCode },
                 { "redirect_uri", redirectUri }
@@ -112,8 +112,8 @@ namespace Rideshare.Uber.Sdk
         {
             var data = new Dictionary<string, string>
             {
-                { "client_id", _clientId },
-                { "client_secret", _clientSecret },
+                { "client_id", this._clientId },
+                { "client_secret", this._clientSecret },
                 { "grant_type", "refresh_token" },
                 { "refresh_token", refreshToken },
                 { "redirect_uri", redirectUri }
@@ -164,8 +164,8 @@ namespace Rideshare.Uber.Sdk
         {
             var formData = new Dictionary<string, string>
             {
-                { "client_id", _clientId },
-                { "client_secret", _clientSecret },
+                { "client_id", this._clientId },
+                { "client_secret", this._clientSecret },
                 { "token", accessToken }
             };
 
