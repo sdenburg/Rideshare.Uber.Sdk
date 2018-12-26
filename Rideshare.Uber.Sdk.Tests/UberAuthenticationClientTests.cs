@@ -12,11 +12,7 @@ namespace Rideshare.Uber.Sdk.Tests
 
         public UberAuthenticationClientTests()
         {
-            var fileMap = new ExeConfigurationFileMap()
-            {
-                ExeConfigFilename = $"./{Assembly.GetExecutingAssembly().GetName().Name}.dll.config"
-            };
-            var configuration = ConfigurationManager.OpenMappedExeConfiguration(fileMap, ConfigurationUserLevel.None);
+            var configuration = ConfigurationLoader.GetConfiguration();
 
             this._clientId = configuration.AppSettings.Settings["ClientId"].Value;
             this._clientSecret = configuration.AppSettings.Settings["ClientSecret"].Value;
