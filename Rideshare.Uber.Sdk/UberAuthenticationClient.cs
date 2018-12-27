@@ -5,12 +5,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
-using Rideshare.Uber.Sdk.Interfaces;
 using Rideshare.Uber.Sdk.Models;
 
 namespace Rideshare.Uber.Sdk
 {
-    public class UberAuthenticationClient : IUberAuthenticationClient
+    public class UberAuthenticationClient
     {
         private readonly string _clientId;
         private readonly string _clientSecret;
