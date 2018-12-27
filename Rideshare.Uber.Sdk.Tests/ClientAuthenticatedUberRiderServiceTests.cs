@@ -4,26 +4,24 @@ using Xunit;
 
 namespace Rideshare.Uber.Sdk.Tests
 {
-    public class UberClientTests
+    public class ClientAuthenticatedUberRiderServiceTests
     {
         private readonly string _clientToken;
-        private readonly string _serverToken;
         private readonly string _sandboxUrl = "https://sandbox-api.uber.com";
 
-        public UberClientTests()
+        public ClientAuthenticatedUberRiderServiceTests()
         {
             var configuration = ConfigurationLoader.GetConfiguration();
 
             // this._clientToken = configuration.AppSettings.Settings["ClientToken"].Value;
-            this._serverToken = configuration.AppSettings.Settings["ServerToken"].Value;
         }
 
         #region Products
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetProducts_ForValidParameters_ReturnsListOfProducts()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetProductsAsync(
                 TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude);
@@ -37,10 +35,10 @@ namespace Rideshare.Uber.Sdk.Tests
             Assert.NotEmpty(response.Data.Products[0].DisplayName);
         }
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetProducts_ForInvalidParameters_ReturnsEmptyList()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetProductsAsync(
                 TestLocations.SouthPoleLatitude, TestLocations.SouthPoleLongitude);
@@ -56,10 +54,10 @@ namespace Rideshare.Uber.Sdk.Tests
 
         #region Estimates
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetPriceEstimate_ForValidParameters_ReturnsListOfPriceEstimates()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetPriceEstimateAsync(
                 TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude,
@@ -74,10 +72,10 @@ namespace Rideshare.Uber.Sdk.Tests
             Assert.NotEmpty(response.Data.PriceEstimates[0].DisplayName);
         }
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetPriceEstimate_ForInvalidParameters_ReturnsEmptyList()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetPriceEstimateAsync(
                 TestLocations.SouthPoleLatitude, TestLocations.SouthPoleLongitude,
@@ -90,10 +88,10 @@ namespace Rideshare.Uber.Sdk.Tests
             Assert.Empty(response.Data.PriceEstimates);
         }
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetTimeEstimate_ForValidDefaultParameters_ReturnsListOfPriceEstimates()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetTimeEstimateAsync(
                 TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude);
@@ -107,10 +105,10 @@ namespace Rideshare.Uber.Sdk.Tests
             Assert.NotEmpty(response.Data.TimeEstimates[0].ProductId);
         }
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetTimeEstimate_ForInvalidDefaultParameters_ReturnsEmptyList()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetTimeEstimateAsync(
                 TestLocations.SouthPoleLatitude, TestLocations.SouthPoleLongitude);
@@ -122,10 +120,10 @@ namespace Rideshare.Uber.Sdk.Tests
             Assert.Empty(response.Data.TimeEstimates);
         }
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetTimeEstimate_ForValidCustomerId_ReturnsListOfPriceEstimates()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetTimeEstimateAsync(
                 TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude, "TODO");
@@ -139,10 +137,10 @@ namespace Rideshare.Uber.Sdk.Tests
             Assert.NotEmpty(response.Data.TimeEstimates[0].ProductId);
         }
 
-        [Fact]
+        [Fact(Skip = "Client")]
         public async void GetTimeEstimate_ForInvalidCustomerId_ReturnsListOfPriceEstimates()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetTimeEstimateAsync(
                 TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude, "INVALID");
@@ -159,10 +157,10 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "TODO")]
         public async void GetTimeEstimate_ForValidProductId_ReturnsListOfPriceEstimates()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetTimeEstimateAsync(
-                TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude, "TODO", "TODO");
+                TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude, "TODO");
 
             Assert.NotNull(response);
             Assert.NotNull(response.Data);
@@ -173,13 +171,13 @@ namespace Rideshare.Uber.Sdk.Tests
             Assert.NotEmpty(response.Data.TimeEstimates[0].ProductId);
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact(Skip = "Client")]
         public async void GetTimeEstimate_ForInvalidProductId_ReturnsListOfPriceEstimates()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetTimeEstimateAsync(
-                TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude, "TODO", "INVALID");
+                TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude, "INVALID");
 
             Assert.NotNull(response);
             Assert.NotNull(response.Data);
@@ -197,7 +195,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void Request_ForValidParameters_ReturnsRequest()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.RequestAsync(
                 "893b94af-ca9d-4f0f-9201-6d426cedaa5c",
@@ -212,7 +210,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void Request_ForInvalidParameters_ReturnsError()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.RequestAsync(
                 "INVALID",
@@ -227,7 +225,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void GetRequestDetails_ForValidParameters_ReturnsRequestDetails()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var allRequests = await uberClient.GetUserActivityAsync(0, 50);
             var response = await uberClient.GetRequestDetailsAsync(allRequests.Data.History.First().Id);
@@ -240,7 +238,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void GetRequestDetails_ForValidParameters_ReturnsError()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetRequestDetailsAsync("INVALID");
 
@@ -256,7 +254,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Promo")]
         public async void GetPromotion_ForValidParameters_ReturnsPromotion()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetPromotionAsync(
                 TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude,
@@ -270,7 +268,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Promo")]
         public async void GetPromotion_ForInvalidParameters_ReturnsError()
         {
-            var uberClient = new UberClient(AccessTokenType.Server, _serverToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetPromotionAsync(
                 TestLocations.WhiteHouseLatitude, TestLocations.WhiteHouseLongitude,
@@ -284,7 +282,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void GetUserActivity_ForValidParameters_ReturnsUserUserActivity()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetUserActivityAsync(0, 10);
 
@@ -296,7 +294,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void GetUserActivity_ForInvalidParameters_ReturnsError()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetUserActivityAsync(0, -1);
 
@@ -308,7 +306,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void GetUserProfile_ForValidToken_ReturnsUserUserActivity()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetUserProfileAsync();
 
@@ -320,7 +318,7 @@ namespace Rideshare.Uber.Sdk.Tests
         [Fact(Skip = "Client")]
         public async void GetUserProfile_ForInvalidToken_ReturnsError()
         {
-            var uberClient = new UberClient(AccessTokenType.Client, _clientToken, _sandboxUrl);
+            var uberClient = new ClientAuthenticatedUberRiderService(_clientToken, _sandboxUrl);
 
             var response = await uberClient.GetUserProfileAsync();
 
