@@ -1,8 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Seth Denburg</Authors>
+    <Description>C# Uber SDK for API v1.2</Description>
+    <Version>0.1.0</Version>
+    <PackageProjectUrl>https://github.com/sdenburg/Rideshare.Uber.Sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sdenburg/Rideshare.Uber.Sdk</RepositoryUrl>
+    <PackageTags>Rideshare Uber Sdk</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Rideshare.Uber.Sdk.1.0.0.nupkg" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
